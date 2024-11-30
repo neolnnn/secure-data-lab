@@ -1,0 +1,37 @@
+name: Debug Secure Data Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Debug-Job:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Print the API_KEY with spaces
+      - name: Print API_KEY Debug Info
+        run: |
+          if [ -z "$API_KEY" ]; then
+            echo "ERROR: API_KEY is missing!";
+          else
+            echo "SUCCESS: The API_KEY (spaced) is:"
+            echo $API_KEY | sed 's/./& /g'
+          fi
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+
+      # Step 3: Save the API_KEY to a file
+      - name: Save API_KEY to File
+        run: echo "${{ secrets.API_KEY }}" > api_key.txt
+
+      # Step 4: Upload the API_KEY file as an artifact
+      - name: Upload API_KEY Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: api_key
+          path: api_key.txt
